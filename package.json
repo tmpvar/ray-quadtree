@@ -31,6 +31,6 @@
     "tape": "^4.2.2"
   },
   "dependencies": {
-    "ray-aabb-slab": "^1.0.0"
+    "ray-aabb-slab": "^1.0.1"
   }
 }
