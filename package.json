@@ -4,7 +4,8 @@
   "description": "intersect a ray with a quadtree",
   "main": "ray-quadtree.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "node test.js",
+    "demo": "budo --live --open demo.js"
   },
   "repository": {
     "type": "git",

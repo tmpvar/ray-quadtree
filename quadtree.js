@@ -1,6 +1,7 @@
 module.exports = QuadTree;
 
-QuadTree.leafRadius = 10
+QuadTree.leafRadius = 10;
+QuadTree.QuadTreeNode = QuadTreeNode;
 
 function QuadTree(center, radius) {
   this.root = new QuadTreeNode(center, radius)
@@ -10,24 +11,31 @@ QuadTree.prototype.add = function add(x, y) {
   // ensure the quadtree will contain the new point
   while (!this.root.contains(x, y)) {
     var child = this.root;
-    this.root = new QuadTreeNode(child.nearestCorner(x, y), child.radius * 2)
+    this.root = new QuadTreeNode(child.nearestCorner(x, y), child.radius * 2);
+    var childQuad = this.root.quadrant(child.center[0], child.center[1])
+    this.root.children[childQuad] = child;
   }
 
   // // trace down into the quadtree and place the point in the correct cell
   var node = this.root
   while (!node.leaf) {
-
-    var quad = node.quadrant(x, y)
+    var quad = node.quadrant(x, y);
     if (!node.children[quad]) {
       var r = node.radius/2
       node.occupied++;
       node = node.children[quad] = new QuadTreeNode(node.quadrantCenter(x, y), r)
+    } else {
+      node = node.children[quad];
     }
+    node.occupied++;
+  }
+
+  if (!node.occupied) {
+    node.occupied = 1;
   }
 
   return node;
 }
-
 
 function QuadTreeNode(center, radius) {
   this.children = [null, null, null, null];
@@ -61,16 +69,17 @@ QuadTreeNode.prototype.quadrant = function quadrant(x, y) {
 }
 
 QuadTreeNode.prototype.quadrantCenter = function quadrantCenter(x, y) {
-  var r = this.radius/2
+  var r = this.radius / 2;
   return [
-    x < this.center[0] ? -r : r,
-    y < this.center[1] ? -r : r
+    x < this.center[0] ? this.center[0] - r : this.center[0] + r,
+    y < this.center[1] ? this.center[1] - r : this.center[1] + r
   ]
 }
 
 QuadTreeNode.prototype.nearestCorner = function nearestCorner(x, y) {
+  var r = this.radius
   return [
-    x < this.center[0] ? -this.radius : this.radius,
-    y < this.center[1] ? -this.radius : this.radius
+    x < this.center[0] ? this.center[0] - r : this.center[0] + r,
+    y < this.center[1] ? this.center[1] - r : this.center[1] + r
   ]
 }
