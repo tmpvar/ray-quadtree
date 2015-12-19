@@ -46,7 +46,32 @@ tree.add(120, 5)
 tree.add(240, 5)
 tree.add(240, 50)
 
+var mouse = {
+  down: false,
+  add: function(e) {
+    var hw = (window.innerWidth/2)|0;
+    var hh = (window.innerHeight/2)|0;
+    tree.add(e.clientX - hw, window.innerHeight - (e.clientY + hh))
+  }
+}
 
+
+window.addEventListener('mousedown', function(e) {
+  mouse.down = true
+  mouse.add(e);
+  ctx.dirty()
+})
+
+window.addEventListener('mousemove', function(e) {
+  if (mouse.down) {
+    mouse.add(e);
+  }
+  ctx.dirty()
+})
+
+window.addEventListener('mouseup', function() {
+  mouse.down = false;
+})
 
 var ctx = fc(function() {
   ctx.clear();
