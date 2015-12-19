@@ -36,33 +36,51 @@ QuadTree.QuadTreeNode.prototype.render = function render(ctx) {
 
 var tree = new QuadTree([0, 0])
 
-tree.add(10, 5)
-tree.add(20, 5)
-tree.add(40, 5)
-tree.add(60, 5)
-tree.add(80, 5)
-tree.add(100, 5)
-tree.add(120, 5)
-tree.add(240, 5)
-tree.add(240, 50)
+// tree.add(10, 5)
+// tree.add(20, 5)
+// tree.add(40, 5)
+// tree.add(60, 5)
+// tree.add(80, 5)
+// tree.add(100, 5)
+// tree.add(120, 5)
+// tree.add(240, 5)
+// tree.add(240, 50)
 
 var mouse = {
   down: false,
+  pos: [0, 0],
   add: function(e) {
+
+    tree.add(this.pos[0], this.pos[1])
+  },
+  pos: function(e) {
     var hw = (window.innerWidth/2)|0;
     var hh = (window.innerHeight/2)|0;
-    tree.add(e.clientX - hw, window.innerHeight - (e.clientY + hh))
+    var x = e.clientX - hw;
+    var y = window.innerHeight - (e.clientY + hh)
+
+    this.pos[0] = (Math.round(x/20) * 20)
+    this.pos[1] = (Math.round(y/20) * 20)
+  },
+  render: function(ctx) {
+    ctx.save()
+      ctx.translate(this.pos[0], this.pos[1])
+      ctx.strokeStyle = 'red'
+      ctx.strokeRect(-10, -10, 20, 20)
+    ctx.restore()
   }
 }
 
 
 window.addEventListener('mousedown', function(e) {
   mouse.down = true
+  mouse.pos(e)
   mouse.add(e);
   ctx.dirty()
 })
 
 window.addEventListener('mousemove', function(e) {
+  mouse.pos(e)
   if (mouse.down) {
     mouse.add(e);
   }
@@ -87,4 +105,6 @@ var ctx = fc(function() {
   ctx.strokeStyle = 'hsla(90, 100%, 63%, .75)'
 
   ctx.strokeRect(x-r, y-r, r*2, r*2);
+
+  mouse.render(ctx)
 })
