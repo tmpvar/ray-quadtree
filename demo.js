@@ -1,7 +1,9 @@
 var fc = require('fc')
 var center = require('ctx-translate-center')
 var QuadTree = require('./quadtree')
-
+var circle = require('ctx-circle')
+var dline = require('ctx-dashed-line')
+var isect = require('./ray-quadtree')
 
 QuadTree.QuadTreeNode.prototype.render = function render(ctx) {
   var r = this.radius;
@@ -11,8 +13,6 @@ QuadTree.QuadTreeNode.prototype.render = function render(ctx) {
   this.children.forEach(function(child) {
     child && child.render(ctx);
   })
-
-
 
   if (this.leaf && this.occupied) {
     ctx.strokeStyle = 'hsl(210, 100%, 63%)'
@@ -104,6 +104,11 @@ window.addEventListener('mouseup', function(e) {
   mouse.down = false;
 })
 
+var ray = {
+  origin: [-300, 0],
+  direction: [1, 0]
+}
+
 var ctx = fc(function() {
   ctx.clear();
 
@@ -118,6 +123,27 @@ var ctx = fc(function() {
   ctx.strokeStyle = 'hsla(90, 100%, 63%, .75)'
 
   ctx.strokeRect(x-r, y-r, r*2, r*2);
+
+  var out = [0, 0]
+
+
+  ctx.beginPath()
+  circle(ctx, ray.origin[0], ray.origin[1], 5)
+  ctx.strokeStyle = 'hsl(217, 100%, 63%)'
+  ctx.moveTo(ray.origin[0], ray.origin[1])
+  if (isect(ray.origin, ray.direction, tree, out)) {
+    ctx.lineTo(out[0][0], out[0][1]);
+    dline(ctx, out[0], out[1], 4)
+    ctx.stroke()
+    ctx.beginPath()
+      circle(ctx, out[0][0], out[0][1], 3)
+      circle(ctx, out[1][0], out[1][1], 3)
+      ctx.fillStyle = "orange"
+      ctx.fill()
+  }
+  var end = isect.rayAtTime(ray.origin, ray.direction, 100000)
+  ctx.lineTo(end[0], end[1])
+  ctx.stroke()
 
   mouse.render(ctx)
 })

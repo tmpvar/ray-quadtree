@@ -65,10 +65,8 @@ QuadTree.prototype.remove = function remove(x, y) {
 QuadTree.prototype.cleanRoot = function cleanRoot() {
   var activeChildren = this.root.getActiveChildren();
   while (activeChildren.length === 1) {
-console.log(activeChildren.length)
-
-    this.root = activeChildren[0]
-    this.root.parent = null
+    this.root = activeChildren[0];
+    this.root.parent = null;
     activeChildren = this.root.getActiveChildren();
   }
 }
@@ -121,7 +119,7 @@ QuadTreeNode.prototype.contains = function contains(x, y) {
 
 QuadTreeNode.prototype.getActiveChildren = function getActiveChildren() {
   return this.children.filter(function(child) {
-    return child;// && child.occupied > 0;
+    return child && child.occupied > 0;
   })
 }
 
@@ -172,3 +170,4 @@ QuadTreeNode.prototype.nearestCorner = function nearestCorner(x, y) {
     y < this.center[1] ? this.center[1] - r : this.center[1] + r
   ]
 }
+
