@@ -48,19 +48,28 @@ var tree = new QuadTree([0, 0])
 
 var mouse = {
   down: false,
+  diry: false,
+  moved: false,
   pos: [0, 0],
   add: function(e) {
-
-    tree.add(this.pos[0], this.pos[1])
+    if (this.dirty) {
+      tree.toggle(this.pos[0], this.pos[1]);
+      tree.cleanRoot()
+      this.dirty = false;
+    }
+    ctx.dirty()
   },
   pos: function(e) {
     var hw = (window.innerWidth/2)|0;
     var hh = (window.innerHeight/2)|0;
-    var x = e.clientX - hw;
-    var y = window.innerHeight - (e.clientY + hh)
+    var x = Math.round((e.clientX - hw) / 20) * 20
+    var y = Math.round((window.innerHeight - (e.clientY + hh)) / 20) * 20
 
-    this.pos[0] = (Math.round(x/20) * 20)
-    this.pos[1] = (Math.round(y/20) * 20)
+    if (this.pos[0] !== x || this.pos[1] !== y) {
+      this.dirty = true;
+      this.pos[0] = x;
+      this.pos[1] = y;
+    }
   },
   render: function(ctx) {
     ctx.save()
@@ -71,23 +80,27 @@ var mouse = {
   }
 }
 
-
 window.addEventListener('mousedown', function(e) {
-  mouse.down = true
-  mouse.pos(e)
-  mouse.add(e);
-  ctx.dirty()
+  mouse.down = true;
+  mouse.moved = false;
 })
 
 window.addEventListener('mousemove', function(e) {
-  mouse.pos(e)
+  mouse.pos(e);
+
   if (mouse.down) {
     mouse.add(e);
+    mouse.moved = true;
   }
-  ctx.dirty()
+
+  ctx.dirty();
 })
 
-window.addEventListener('mouseup', function() {
+window.addEventListener('mouseup', function(e) {
+  if (!mouse.moved) {
+    mouse.dirty = true;
+  }
+  mouse.add(e);
   mouse.down = false;
 })
 
