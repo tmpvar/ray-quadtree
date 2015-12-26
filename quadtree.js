@@ -13,9 +13,11 @@ QuadTree.prototype.add = function add(x, y) {
     var child = this.root;
     this.root = new QuadTreeNode(child.nearestCorner(x, y), child.radius * 2);
     var childQuad = this.root.quadrant(child.center[0], child.center[1])
-    this.root.children[childQuad] = child;
-    this.root.occupied = child.occupied;
-    child.parent = this.root;
+    if (child.occupied) {
+      this.root.children[childQuad] = child;
+      this.root.occupied = child.occupied;
+      child.parent = this.root;
+    }
   }
 
   // // trace down into the quadtree and place the point in the correct cell
