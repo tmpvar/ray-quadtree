@@ -1,7 +1,7 @@
 module.exports = QuadTree;
 
 QuadTree.leafRadius = 10;
-QuadTree.QuadTreeNode = QuadTreeNode;
+QuadTree.Node = QuadTreeNode;
 
 function QuadTree(center, radius) {
   this.root = new QuadTreeNode(center, radius)
@@ -154,7 +154,7 @@ QuadTreeNode.prototype.setOccupied = function markOccupied(bool) {
 //
 
 QuadTreeNode.prototype.quadrant = function quadrant(x, y) {
-  return (x > this.center[0] ? 1 : 0) | (y > this.center[1] ? 2 : 0)
+  return (x >= this.center[0] ? 1 : 0) | (y >= this.center[1] ? 2 : 0)
 }
 
 QuadTreeNode.prototype.quadrantCenter = function quadrantCenter(x, y) {

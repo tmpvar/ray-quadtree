@@ -5,7 +5,7 @@ var circle = require('ctx-circle')
 var dline = require('ctx-dashed-line')
 var isect = require('./ray-quadtree')
 
-QuadTree.QuadTreeNode.prototype.render = function render(ctx) {
+QuadTree.Node.prototype.render = function render(ctx) {
   var r = this.radius;
   var x = this.center[0];
   var y = this.center[1];
@@ -36,7 +36,8 @@ QuadTree.QuadTreeNode.prototype.render = function render(ctx) {
 
 var tree = new QuadTree([0, 0])
 
-// tree.add(10, 5)
+tree.add(0, -60)
+tree.add(20, 60)
 // tree.add(20, 5)
 // tree.add(40, 5)
 // tree.add(60, 5)
@@ -50,10 +51,10 @@ var mouse = {
   down: false,
   diry: false,
   moved: false,
-  pos: [0, 0],
+  position: [0, 0],
   add: function(e) {
     if (this.dirty) {
-      tree.toggle(this.pos[0], this.pos[1]);
+      tree.toggle(this.position[0], this.position[1]);
       tree.cleanRoot()
       this.dirty = false;
     }
@@ -65,15 +66,15 @@ var mouse = {
     var x = Math.round((e.clientX - hw) / 20) * 20
     var y = Math.round((window.innerHeight - (e.clientY + hh)) / 20) * 20
 
-    if (this.pos[0] !== x || this.pos[1] !== y) {
+    if (this.position[0] !== x || this.position[1] !== y) {
       this.dirty = true;
-      this.pos[0] = x;
-      this.pos[1] = y;
+      this.position[0] = x;
+      this.position[1] = y;
     }
   },
   render: function(ctx) {
     ctx.save()
-      ctx.translate(this.pos[0], this.pos[1])
+      ctx.translate(this.position[0], this.position[1])
       ctx.strokeStyle = 'red'
       ctx.strokeRect(-10, -10, 20, 20)
     ctx.restore()
@@ -105,11 +106,42 @@ window.addEventListener('mouseup', function(e) {
 })
 
 var ray = {
-  origin: [-300, 0],
-  direction: [1, 0]
+  origin: [-100, -50],
+  direction: [0.894427, 0.447214]
+}
+
+function visitNode(node, x, y) {
+  var ret = false;
+
+  ctx.beginPath()
+    circle(ctx, node.center[0], node.center[1], 5);
+    ctx.fillStyle = ctx.strokeStyle = "#444"
+  ctx.closePath()
+  ctx.stroke()
+
+  ctx.save()
+    ctx.translate(node.center[0], node.center[1])
+    if (!node.leaf) {
+      if (node.occupied) {
+        ctx.strokeStyle = "green"
+      } else {
+        ctx.strokeStyle = "red"
+      }
+
+      ctx.strokeRect(-node.radius + 5, -node.radius + 5, node.radius*2 - 10, node.radius*2 - 10);
+    } else {
+      ctx.fillStyle = "#f0f";
+      ctx.fillRect(-node.radius, -node.radius, node.radius*2, node.radius*2)
+      ret = true;
+    }
+
+  ctx.restore();
+
+  return ret;
 }
 
 var ctx = fc(function() {
+  console.clear()
   ctx.clear();
 
   center(ctx)
@@ -126,21 +158,20 @@ var ctx = fc(function() {
 
   var out = [0, 0]
 
-
+  var r = isect(ray.origin, ray.direction, tree, out, visitNode)
   ctx.beginPath()
-  circle(ctx, ray.origin[0], ray.origin[1], 5)
-  ctx.strokeStyle = 'hsl(217, 100%, 63%)'
+  circle(ctx, ray.origin[0], ray.origin[1], 1)
   ctx.moveTo(ray.origin[0], ray.origin[1])
-  if (isect(ray.origin, ray.direction, tree, out)) {
+  ctx.strokeStyle = 'hsl(260, 100%, 68%)';
+console.log('isect', r, out)
+  if (r) {
     ctx.lineTo(out[0][0], out[0][1]);
     dline(ctx, out[0], out[1], 4)
     ctx.stroke()
-    ctx.beginPath()
       circle(ctx, out[0][0], out[0][1], 3)
       circle(ctx, out[1][0], out[1][1], 3)
-      ctx.fillStyle = "orange"
-      ctx.fill()
   }
+
   var end = isect.rayAtTime(ray.origin, ray.direction, 100000)
   ctx.lineTo(end[0], end[1])
   ctx.stroke()

@@ -5,7 +5,7 @@
   "main": "ray-quadtree.js",
   "scripts": {
     "test": "node test.js",
-    "demo": "budo --live --open demo.js"
+    "demo": "budo --open --live demo.js"
   },
   "repository": {
     "type": "git",
