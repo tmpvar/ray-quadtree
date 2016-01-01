@@ -23,7 +23,8 @@ var exitLookup = [
 ];
 
 function next(quad, x, y) {
-  var i = x < y ? 0 : 1
+
+  var i = Math.round(x) < Math.round(y) ? 0 : 1
   return exitLookup[quad][i];
 }
 
