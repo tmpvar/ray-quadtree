@@ -8,8 +8,7 @@ var scratch = [null, null];
 function rayAtTime(o, d, t) {
   return [
     o[0] + d[0] * t,
-    o[1] + d[1] * t,
-    o[2] + d[2] * t
+    o[1] + d[1] * t
   ];
 }
 
@@ -51,7 +50,7 @@ function first(x, y, mx, my) {
     }
   // y entry plane
   } else {
-    if (y < x) {
+    if (y < mx) {
       return 0;
     } else {
       return 1;
@@ -61,46 +60,50 @@ function first(x, y, mx, my) {
 }
 
 
-function processSubtree(tx0, ty0, tx1, ty1, node, visit, depth) {
+function processSubtree(tx0, ty0, tx1, ty1, node, visit, depth, path) {
+  path = path || []
   var mx = (tx0 + tx1) * 0.5;
   var my = (ty0 + ty1) * 0.5;
 
-  if (tx1 < 0 && ty1 < 0) {
-    return false;
-  }
-
+  // if (tx1 < 0 && ty1 < 0) {
+  //   return false;
+  // }
   var quad = first(tx0, ty0, mx, my);
 
-  if (visit(node, tx0, ty0, depth, quad)) {
+  console.log('l', tx0, ty0, 'm', mx, my, 'u', tx1, ty1)
+  if (visit(node, tx0, ty0, depth, path.concat(quad))) {
     return true;
   }
 
   while (quad < 4) {
     var child = node.children[quad];
+    if (!child) {
+      console.warn('skip:', path.concat(quad).join(', '));
+    }
     switch (quad) {
       case 0:
-        if (child && processSubtree(tx0, ty0, mx, my, child, visit, depth+1)) {
+        if (child && processSubtree(tx0, ty0, mx, my, child, visit, depth+1, path.concat(quad))) {
           return true;
         }
         quad = next(quad, mx, my);
       break;
 
       case 1:
-        if (child && processSubtree(mx, ty0, tx1, my, child, visit, depth+1)) {
+        if (child && processSubtree(mx, ty0, tx1, my, child, visit, depth+1, path.concat(quad))) {
           return true;
         }
         quad = next(quad, tx1, my);
       break;
 
       case 2:
-        if (child && processSubtree(tx0, my, mx, ty1, child, visit, depth+1)) {
+        if (child && processSubtree(tx0, my, mx, ty1, child, visit, depth+1, path.concat(quad))) {
           return true;
         }
         quad = next(quad, mx, ty1);
       break;
 
       case 3:
-        if (child && processSubtree(mx, my, tx1, ty1, child, visit, depth+1)) {
+        if (child && processSubtree(mx, my, tx1, ty1, child, visit, depth+1, path.concat(quad))) {
           return true;
         }
         quad = 4;
@@ -129,7 +132,6 @@ function processSubtreeHorizontal(ro, tx0, ty0, tx1, ty1, node, visit, depth) {
     }
   }
 }
-
 
 function processSubtreeVertical(ro, tx0, ty0, tx1, ty1, node, visit, depth) {
   if (!node.occupied) {

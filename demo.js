@@ -14,6 +14,13 @@ QuadTree.Node.prototype.render = function render(ctx) {
     child && child.render(ctx);
   })
 
+  ctx.save()
+    ctx.scale(1, -1)
+    ctx.fillStyle = '#aaa'
+    ctx.font = "14px monospace"
+    ctx.fillText(this.occupied, this.center[0] - 5, -this.center[1]);
+  ctx.restore()
+
   if (this.leaf && this.occupied) {
     ctx.strokeStyle = 'hsl(210, 100%, 63%)'
     ctx.fillStyle = 'hsla(210, 90%, 63%, .65)'
@@ -37,15 +44,11 @@ QuadTree.Node.prototype.render = function render(ctx) {
 var tree = new QuadTree([0, 0])
 
 tree.add(0, -60)
-tree.add(20, 60)
-// tree.add(20, 5)
-// tree.add(40, 5)
-// tree.add(60, 5)
-// tree.add(80, 5)
-// tree.add(100, 5)
-// tree.add(120, 5)
-// tree.add(240, 5)
-// tree.add(240, 50)
+// tree.add(20, 60)
+tree.add(180, 100)
+// tree.add(200, 80)
+// tree.add(500, 260)
+
 
 var mouse = {
   down: false,
@@ -110,8 +113,19 @@ var ray = {
   direction: [0.894427, 0.447214]
 }
 
-function visitNode(node, x, y) {
+var traversalPath = [];
+
+function visitNode(node, tx, ty, depth, path) {
   var ret = false;
+  console.log('path:', path.join(', '))
+
+  ctx.beginPath()
+    var start = isect.rayAtTime(ray.origin, ray.direction, Math.min(tx, ty))
+    var end = isect.rayAtTime(ray.origin, ray.direction, Math.max(tx, ty))
+    ctx.moveTo(start[0], start[1])
+    ctx.lineTo(end[0], end[1])
+  ctx.strokeStyle = "red";
+  ctx.stroke()
 
   ctx.beginPath()
     circle(ctx, node.center[0], node.center[1], 5);
@@ -143,6 +157,7 @@ function visitNode(node, x, y) {
 var ctx = fc(function() {
   console.clear()
   ctx.clear();
+  traversalPath.length = 0;
 
   center(ctx)
   ctx.scale(1, -1);
@@ -163,7 +178,7 @@ var ctx = fc(function() {
   circle(ctx, ray.origin[0], ray.origin[1], 1)
   ctx.moveTo(ray.origin[0], ray.origin[1])
   ctx.strokeStyle = 'hsl(260, 100%, 68%)';
-console.log('isect', r, out)
+
   if (r) {
     ctx.lineTo(out[0][0], out[0][1]);
     dline(ctx, out[0], out[1], 4)
@@ -177,4 +192,14 @@ console.log('isect', r, out)
   ctx.stroke()
 
   mouse.render(ctx)
+
+  ctx.save()
+    ctx.fillStyle = "#aaa"
+    ctx.font = '16px monospace'
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    traversalPath.forEach(function(part, i) {
+      ctx.fillText(part.join(' - '), 010, 0);
+      ctx.translate(0, 20)
+    })
+  ctx.restore()
 })
