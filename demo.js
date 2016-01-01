@@ -54,6 +54,7 @@ var mouse = {
   down: false,
   diry: false,
   moved: false,
+  rotation: 0,
   position: [0, 0],
   add: function(e) {
     if (this.dirty) {
@@ -108,6 +109,13 @@ window.addEventListener('mouseup', function(e) {
   mouse.down = false;
 })
 
+window.addEventListener('mousewheel', function(e) {
+  ctx.dirty()
+  // mouse.rotation = e.
+  mouse.rotation += e.wheelDelta / 500;
+  e.preventDefault()
+})
+
 var ray = {
   origin: [-100, -50],
   direction: [0.894427, 0.447214]
@@ -117,15 +125,8 @@ var traversalPath = [];
 
 function visitNode(node, tx, ty, depth, path) {
   var ret = false;
-  console.log('path:', path.join(', '))
+  path && console.log('path:', path.join(', '))
 
-  ctx.beginPath()
-    var start = isect.rayAtTime(ray.origin, ray.direction, Math.min(tx, ty))
-    var end = isect.rayAtTime(ray.origin, ray.direction, Math.max(tx, ty))
-    ctx.moveTo(start[0], start[1])
-    ctx.lineTo(end[0], end[1])
-  ctx.strokeStyle = "red";
-  ctx.stroke()
 
   ctx.beginPath()
     circle(ctx, node.center[0], node.center[1], 5);
@@ -172,6 +173,16 @@ var ctx = fc(function() {
   ctx.strokeRect(x-r, y-r, r*2, r*2);
 
   var out = [0, 0]
+
+  ray.origin[0] = x + Math.sin(mouse.rotation) * r * 1.5;
+  ray.origin[1] = y + Math.cos(mouse.rotation) * r * 1.5;
+
+  var dx = x - ray.origin[0]
+  var dy = y - ray.origin[1]
+  var il = 1/Math.sqrt(dx*dx + dy*dy)
+  ray.direction[0] = dx * il;
+  ray.direction[1] = dy * il;
+
 
   var r = isect(ray.origin, ray.direction, tree, out, visitNode)
   ctx.beginPath()
