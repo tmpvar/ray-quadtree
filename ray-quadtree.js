@@ -70,7 +70,7 @@ function processSubtree(tx0, ty0, tx1, ty1, node, visit, depth, path) {
   // }
   var quad = first(tx0, ty0, mx, my);
 
-  if (visit(node, tx0, ty0, depth, path.concat(quad))) {
+  if (visit(node, tx0, ty0, depth, path)) {
     return true;
   }
 
