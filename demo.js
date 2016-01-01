@@ -145,7 +145,7 @@ function visitNode(node, tx, ty, depth, path) {
 
       ctx.strokeRect(-node.radius + 5, -node.radius + 5, node.radius*2 - 10, node.radius*2 - 10);
     } else {
-      ctx.fillStyle = "#f0f";
+      ctx.fillStyle = 'hsla(210, 90%, 63%, 1)'
       ctx.fillRect(-node.radius, -node.radius, node.radius*2, node.radius*2)
       ret = true;
     }
@@ -184,7 +184,7 @@ var ctx = fc(function() {
   ray.direction[1] = dy * il;
 
 
-  var r = isect(ray.origin, ray.direction, tree, out, visitNode)
+  var r = isect(ctx, ray.origin, ray.direction, tree, out, visitNode)
   ctx.beginPath()
   circle(ctx, ray.origin[0], ray.origin[1], 1)
   ctx.moveTo(ray.origin[0], ray.origin[1])
