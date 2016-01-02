@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/tmpvar/ray-quadtree#readme",
   "devDependencies": {
+    "browserify": "^12.0.1",
     "budo": "^7.0.4",
     "ctx-circle": "^1.0.0",
     "ctx-dashed-line": "^1.0.0",
