@@ -5,7 +5,8 @@
   "main": "ray-quadtree.js",
   "scripts": {
     "test": "node test.js",
-    "demo": "budo --open --live demo.js"
+    "demo": "budo --open --live demo.js",
+    "build": "mkdir -p ./build/ && browserify -e demo.js -o build/index.js && echo '<html><body><script src=\"index.js\"></script></body></html>' > build/index.html"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,7 @@
     "ctx-dashed-line": "^1.0.0",
     "ctx-translate-center": "^1.0.0",
     "fc": "^1.4.3",
+    "ghpages": "0.0.3",
     "tape": "^4.2.2"
   },
   "dependencies": {
