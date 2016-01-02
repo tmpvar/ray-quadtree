@@ -104,49 +104,48 @@ function processSubtree(ro, mask, tx0, ty0, tx1, ty1, node, visit, depth) {
   }
 }
 
-function processSubtreeHorizontal(ro, tx0, ty0, tx1, ty1, node, visit, depth) {
+function processSubtreeHorizontal(ro, mask, tx0, ty0, tx1, ty1, node, visit, depth) {
   if (visit(node, tx0, ty0, depth, quad)) {
     return true
   }
 
   var txm = (tx0 + tx1) * 0.5;
   var quad = (txm >= 0 ? 0 : 1) | (ro[1] >= node.center[1] ? 2 : 0);
-  var child = node.children[quad];
+  var child = node.children[quad ^ mask];
 
   if (child && processSubtreeHorizontal(ro, txm, ty0, tx1, ty1, child, visit, depth+1)) {
     return true;
   }
 
   if (!(quad & 1)) {
-    child = node.children[quad + 1];
+    child = node.children[(quad + 1) ^ mask];
     if (child && processSubtreeHorizontal(ro, txm, ty0, tx1, ty1, child, visit, depth+1)) {
       return true;
     }
   }
 }
 
-function processSubtreeVertical(ro, tx0, ty0, tx1, ty1, node, visit, depth) {
+function processSubtreeVertical(ro, mask, tx0, ty0, tx1, ty1, node, visit, depth) {
   if (!node.occupied) {
     return false;
   }
 
-  if (visit(node, tx0, ty0, depth, quad)) {
+  if (visit(ro, node, -Infinity, ty0, depth, quad)) {
     return true
   }
 
   var tym = (ty0 + ty1) * 0.5;
   var quad = (ro[0] >= node.center[0] ? 1 : 0) | (tym >= 0 ? 0 : 2);
-  var child = node.children[quad];
+
+  var child = node.children[quad^mask];
 
   // TODO: test for occupancy
-  if (child && processSubtreeVertical(ro, tx0, tym, tx1, ty1, child, visit, depth+1)) {
+  if (child && processSubtreeVertical(ro, mask, tx0, ty0, tx1, tym, child, visit, depth+1)) {
+    console.log('here')
     return true;
   }
-
-  if (quad < 2) {
-    child = node.children[quad + 2];
-    return child && processSubtreeVertical(ro, tx0, tym, tx1, ty1, child, visit, depth+1);
-  }
+  child = node.children[(quad + 2) ^ mask];
+  return child && processSubtreeVertical(ro, mask, tx0, tym, tx1, ty1, child, visit, depth+1);
 }
 
 function rayQuadtree(origin, dir, quadtree, out, visit) {
@@ -178,9 +177,9 @@ function rayQuadtree(origin, dir, quadtree, out, visit) {
   var ty1 = (bounds[1][1] - roy) * idir[1];
   if (max(tx0,ty0) < min(tx1,ty1)) {
     if (!isFinite(ty0)) {
-      return processSubtreeHorizontal(origin, tx0, ty0, tx1, ty1, root, visit, 0);
+      return processSubtreeHorizontal(origin, mask, tx0, ty0, tx1, ty1, root, visit, 0);
     } else if (!isFinite(tx0)) {
-      return processSubtreeVertical(origin, tx0, ty0, tx1, ty1, root, visit, 0);
+      return processSubtreeVertical(origin, mask, tx0, ty0, tx1, ty1, root, visit, 0);
     } else {
       return processSubtree(origin, mask, tx0, ty0, tx1, ty1, root, visit, 0);
     }
