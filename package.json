@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node test.js",
     "demo": "budo --open --live demo.js",
-    "build": "mkdir -p ./build/ && browserify -e demo.js -o build/index.js && echo '<html><body><script src=\"index.js\"></script></body></html>' > build/index.html"
+    "build": "mkdir -p ./build/ && browserify -e demo.js -o build/index.js && echo '<html><body><script src=\"index.js\"></script></body></html>' > build/index.html",
+    "pages": "ghpages"
   },
   "repository": {
     "type": "git",
