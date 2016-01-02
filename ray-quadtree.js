@@ -64,7 +64,7 @@ function processSubtree(ro, mask, tx0, ty0, tx1, ty1, node, visit, depth) {
 
   var quad = first(tx0, ty0, mx, my);
 
-  if (visit(ro, node, tx0, ty0, depth)) {
+  if (visit && visit(ro, node, tx0, ty0, depth)) {
     return true;
   }
 
@@ -102,10 +102,11 @@ function processSubtree(ro, mask, tx0, ty0, tx1, ty1, node, visit, depth) {
       break;
     }
   }
+  return false;
 }
 
 function processSubtreeHorizontal(ro, mask, tx0, ty0, tx1, ty1, node, visit, depth) {
-  if (visit(ro, node, tx0, ty0, depth, quad)) {
+  if (visit && visit(ro, node, tx0, ty0, depth, quad)) {
     return true
   }
 
@@ -123,6 +124,8 @@ function processSubtreeHorizontal(ro, mask, tx0, ty0, tx1, ty1, node, visit, dep
       return true;
     }
   }
+
+  return false;
 }
 
 function processSubtreeVertical(ro, mask, tx0, ty0, tx1, ty1, node, visit, depth) {
@@ -130,7 +133,7 @@ function processSubtreeVertical(ro, mask, tx0, ty0, tx1, ty1, node, visit, depth
     return false;
   }
 
-  if (visit(ro, node, -Infinity, ty0, depth, quad)) {
+  if (visit && visit(ro, node, -Infinity, ty0, depth, quad)) {
     return true
   }
 
