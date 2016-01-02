@@ -208,7 +208,7 @@ var ctx = fc(function() {
     ctx.beginPath()
     circle(ctx, origin[0], origin[1], 1)
     ctx.moveTo(origin[0], origin[1])
-    ctx.strokeStyle = 'rgba(20, 20, 20, .5)';
+    ctx.strokeStyle = 'rgba(20, 20, 20, .05)';
 
     if (r) {
       ctx.lineTo(out[0][0], out[0][1]);
