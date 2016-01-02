@@ -159,7 +159,7 @@ function processSubtreeVertical(ro, tx0, ty0, tx1, ty1, node, visit, depth) {
   }
 }
 
-function rayQuadtree(ctx, origin, dir, quadtree, out, visit) {
+function rayQuadtree(origin, dir, quadtree, out, visit) {
   var dx = dir[0];
   var dy = dir[1];
   var rox = origin[0];
@@ -179,15 +179,6 @@ function rayQuadtree(ctx, origin, dir, quadtree, out, visit) {
     dy = -dy;
     roy = bounds[0][1] + (bounds[1][1] - roy);
   }
-
-ctx.beginPath()
-  ctx.arc(rox, roy, 2, 0, Math.PI*2, false)
-  var far = rayAtTime([rox, roy], [dx, dy], 10000);
-  ctx.moveTo(rox, roy);
-  ctx.lineTo(far[0], far[1])
-  ctx.fillStyle = ctx.strokeStyle = 'yellow'
-  ctx.fill()
-  ctx.stroke()
 
   var idir = [1/dx, 1/dy];
 

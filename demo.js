@@ -183,24 +183,34 @@ var ctx = fc(function() {
   ray.direction[0] = dx * il;
   ray.direction[1] = dy * il;
 
+  var dist = 10;
+  var skewed = [-ray.direction[1], ray.direction[0]]
 
-  var r = isect(ctx, ray.origin, ray.direction, tree, out, visitNode)
-  ctx.beginPath()
-  circle(ctx, ray.origin[0], ray.origin[1], 1)
-  ctx.moveTo(ray.origin[0], ray.origin[1])
-  ctx.strokeStyle = 'hsl(260, 100%, 68%)';
+  for (var i=-dist; i<=dist; i++) {
+    var origin = [
+      ray.origin[0] + skewed[0] * i * 5,
+      ray.origin[1] + skewed[1] * i * 5
+    ]
 
-  if (r) {
-    ctx.lineTo(out[0][0], out[0][1]);
-    dline(ctx, out[0], out[1], 4)
+
+    var r = isect(origin, ray.direction, tree, out, visitNode)
+    ctx.beginPath()
+    circle(ctx, origin[0], origin[1], 1)
+    ctx.moveTo(origin[0], origin[1])
+    ctx.strokeStyle = 'hsl(260, 100%, 68%)';
+
+    if (r) {
+      ctx.lineTo(out[0][0], out[0][1]);
+      dline(ctx, out[0], out[1], 4)
+      ctx.stroke()
+        circle(ctx, out[0][0], out[0][1], 3)
+        circle(ctx, out[1][0], out[1][1], 3)
+    }
+
+    var end = isect.rayAtTime(origin, ray.direction, 100000)
+    ctx.lineTo(end[0], end[1])
     ctx.stroke()
-      circle(ctx, out[0][0], out[0][1], 3)
-      circle(ctx, out[1][0], out[1][1], 3)
   }
-
-  var end = isect.rayAtTime(ray.origin, ray.direction, 100000)
-  ctx.lineTo(end[0], end[1])
-  ctx.stroke()
 
   mouse.render(ctx)
 
