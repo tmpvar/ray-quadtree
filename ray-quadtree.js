@@ -113,13 +113,13 @@ function processSubtreeHorizontal(ro, mask, tx0, ty0, tx1, ty1, node, visit, dep
   var quad = (txm >= 0 ? 0 : 1) | (ro[1] >= node.center[1] ? 2 : 0);
   var child = node.children[quad ^ mask];
 
-  if (child && processSubtreeHorizontal(ro, txm, ty0, tx1, ty1, child, visit, depth+1)) {
+  if (child && processSubtreeHorizontal(ro, mask, txm, ty0, tx1, ty1, child, visit, depth+1)) {
     return true;
   }
 
   if (!(quad & 1)) {
     child = node.children[(quad + 1) ^ mask];
-    if (child && processSubtreeHorizontal(ro, txm, ty0, tx1, ty1, child, visit, depth+1)) {
+    if (child && processSubtreeHorizontal(ro, mask, txm, ty0, tx1, ty1, child, visit, depth+1)) {
       return true;
     }
   }
