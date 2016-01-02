@@ -23,11 +23,8 @@ var exitLookup = [
 ];
 
 function next(quad, x, y) {
-  var i = x <= y ? 0 : 1;
-  // i = Math.round(x) < Math.round(y) ? 0 : 1
-  return exitLookup[quad][i];
+  return exitLookup[quad][x <= y ? 0 : 1];
 }
-
 
 /*
         o-------o-------o
@@ -61,15 +58,13 @@ function first(x, y, mx, my) {
   }
 }
 
-function processSubtree(origin, mask, tx0, ty0, tx1, ty1, node, visit, depth, path) {
-  path = path || []
-
+function processSubtree(ro, mask, tx0, ty0, tx1, ty1, node, visit, depth) {
   var mx = (tx0 + tx1) * 0.5;
   var my = (ty0 + ty1) * 0.5;
 
   var quad = first(tx0, ty0, mx, my);
 
-  if (visit(origin, node, tx0, ty0, depth, path)) {
+  if (visit(ro, node, tx0, ty0, depth)) {
     return true;
   }
 
@@ -79,28 +74,28 @@ function processSubtree(origin, mask, tx0, ty0, tx1, ty1, node, visit, depth, pa
 
     switch (quad) {
       case 0:
-        if (child && processSubtree(origin, mask, tx0, ty0, mx, my, child, visit, depth+1, path.concat(masked))) {
+        if (child && processSubtree(ro, mask, tx0, ty0, mx, my, child, visit, depth+1)) {
           return true;
         }
         quad = next(quad, mx, my);
       break;
 
       case 1:
-        if (child && processSubtree(origin, mask, mx, ty0, tx1, my, child, visit, depth+1, path.concat(masked))) {
+        if (child && processSubtree(ro, mask, mx, ty0, tx1, my, child, visit, depth+1)) {
           return true;
         }
         quad = next(quad, tx1, my);
       break;
 
       case 2:
-        if (child && processSubtree(origin, mask, tx0, my, mx, ty1, child, visit, depth+1, path.concat(masked))) {
+        if (child && processSubtree(ro, mask, tx0, my, mx, ty1, child, visit, depth+1)) {
           return true;
         }
         quad = next(quad, mx, ty1);
       break;
 
       case 3:
-        if (child && processSubtree(origin, mask, mx, my, tx1, ty1, child, visit, depth+1, path.concat(masked))) {
+        if (child && processSubtree(ro, mask, mx, my, tx1, ty1, child, visit, depth+1)) {
           return true;
         }
         quad = 4;
