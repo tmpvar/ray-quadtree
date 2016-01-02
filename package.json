@@ -1,6 +1,6 @@
 {
   "name": "ray-quadtree",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "intersect a ray with a quadtree",
   "main": "ray-quadtree.js",
   "scripts": {
