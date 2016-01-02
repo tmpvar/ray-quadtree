@@ -57,7 +57,7 @@ var mouse = {
   down: false,
   diry: false,
   moved: false,
-  rotation: -.75,
+  rotation: Math.PI/4,
   position: [0, 0],
   add: function(e) {
     if (this.dirty) {
@@ -126,7 +126,7 @@ var ray = {
 
 var traversalPath = [];
 
-function visitNode(origin, node, tx, ty, depth, path) {
+function visitNode(origin, node, tx, ty, depth) {
   var ret = false;
 
   // ctx.beginPath()
@@ -181,10 +181,6 @@ var ctx = fc(function() {
   var y = tree.root.center[1];
   ctx.strokeStyle = 'hsla(90, 100%, 63%, .75)'
 
-  // ctx.strokeRect(x-r, y-r, r*2, r*2);
-
-  var out = [0, 0]
-
   ray.origin[0] = x + Math.sin(mouse.rotation) * r * 1.5;
   ray.origin[1] = y + Math.cos(mouse.rotation) * r * 1.5;
 
@@ -203,23 +199,15 @@ var ctx = fc(function() {
       ray.origin[1] + skewed[1] * i * .25
     ]
 
-
-    var r = isect(origin, ray.direction, tree, out, visitNode)
-    ctx.beginPath()
-    circle(ctx, origin[0], origin[1], 1)
-    ctx.moveTo(origin[0], origin[1])
+    var r = isect(origin, ray.direction, tree, visitNode);
+    ctx.beginPath();
+    circle(ctx, origin[0], origin[1], 1);
+    ctx.moveTo(origin[0], origin[1]);
     ctx.strokeStyle = 'hsla(25, 100%, 68%, .5)';
 
-    if (r) {
-      ctx.lineTo(out[0][0], out[0][1]);
-      dline(ctx, out[0], out[1], 4)
-      ctx.stroke()
-        circle(ctx, out[0][0], out[0][1], 3)
-        circle(ctx, out[1][0], out[1][1], 3)
-    } else {
+    if (!r) {
       var end = isect.rayAtTime(origin, ray.direction, 100000)
       ctx.lineTo(end[0], end[1])
-
     }
     ctx.stroke()
   }

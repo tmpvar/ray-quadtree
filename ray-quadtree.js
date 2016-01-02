@@ -105,7 +105,7 @@ function processSubtree(ro, mask, tx0, ty0, tx1, ty1, node, visit, depth) {
 }
 
 function processSubtreeHorizontal(ro, mask, tx0, ty0, tx1, ty1, node, visit, depth) {
-  if (visit(node, tx0, ty0, depth, quad)) {
+  if (visit(ro, node, tx0, ty0, depth, quad)) {
     return true
   }
 
@@ -113,7 +113,7 @@ function processSubtreeHorizontal(ro, mask, tx0, ty0, tx1, ty1, node, visit, dep
   var quad = (txm >= 0 ? 0 : 1) | (ro[1] >= node.center[1] ? 2 : 0);
   var child = node.children[quad ^ mask];
 
-  if (child && processSubtreeHorizontal(ro, mask, txm, ty0, tx1, ty1, child, visit, depth+1)) {
+  if (child && processSubtreeHorizontal(ro, mask, tx0, ty0, tx1, ty1, child, visit, depth+1)) {
     return true;
   }
 
@@ -148,7 +148,7 @@ function processSubtreeVertical(ro, mask, tx0, ty0, tx1, ty1, node, visit, depth
   return child && processSubtreeVertical(ro, mask, tx0, tym, tx1, ty1, child, visit, depth+1);
 }
 
-function rayQuadtree(origin, dir, quadtree, out, visit) {
+function rayQuadtree(origin, dir, quadtree, visit) {
   var dx = dir[0];
   var dy = dir[1];
   var rox = origin[0];
@@ -183,9 +183,6 @@ function rayQuadtree(origin, dir, quadtree, out, visit) {
     } else {
       return processSubtree(origin, mask, tx0, ty0, tx1, ty1, root, visit, 0);
     }
-  } else {
-    console.log('no isect')
   }
-
-  return null;
+  return false;
 }
