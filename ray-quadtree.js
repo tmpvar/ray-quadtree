@@ -23,10 +23,8 @@ var exitLookup = [
 ];
 
 function next(quad, x, y) {
-  var i = 0;
-  if (Math.round(x) !== Math.round(y)) {
-    i = Math.round(x) < Math.round(y) ? 0 : 1
-  }
+  var i = x <= y ? 0 : 1;
+  // i = Math.round(x) < Math.round(y) ? 0 : 1
   return exitLookup[quad][i];
 }
 
@@ -65,12 +63,10 @@ function first(x, y, mx, my) {
 
 function processSubtree(origin, mask, tx0, ty0, tx1, ty1, node, visit, depth, path) {
   path = path || []
+
   var mx = (tx0 + tx1) * 0.5;
   var my = (ty0 + ty1) * 0.5;
 
-  // if (tx1 < 0 && ty1 < 0) {
-  //   return false;
-  // }
   var quad = first(tx0, ty0, mx, my);
 
   if (visit(origin, node, tx0, ty0, depth, path)) {

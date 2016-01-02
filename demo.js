@@ -44,9 +44,12 @@ QuadTree.Node.prototype.render = function render(ctx) {
 var tree = new QuadTree([0, 0])
 
 tree.add(0, -60)
-// tree.add(20, 60)
+tree.add(20, 60)
+tree.add(40, 80)
+tree.add(100, -20)
+
 tree.add(180, 100)
-// tree.add(200, 80)
+tree.add(200, 80)
 // tree.add(500, 260)
 
 
@@ -54,7 +57,7 @@ var mouse = {
   down: false,
   diry: false,
   moved: false,
-  rotation: 0,
+  rotation: -.75,
   position: [0, 0],
   add: function(e) {
     if (this.dirty) {
@@ -191,7 +194,7 @@ var ctx = fc(function() {
   ray.direction[0] = dx * il;
   ray.direction[1] = dy * il;
 
-  var dist = 200;
+  var dist = 400;
   var skewed = [-ray.direction[1], ray.direction[0]]
 
   for (var i=-dist; i<=dist; i++) {
@@ -205,7 +208,7 @@ var ctx = fc(function() {
     ctx.beginPath()
     circle(ctx, origin[0], origin[1], 1)
     ctx.moveTo(origin[0], origin[1])
-    ctx.strokeStyle = 'rgba(20, 20, 20, .05)';
+    ctx.strokeStyle = 'rgba(20, 20, 20, .5)';
 
     if (r) {
       ctx.lineTo(out[0][0], out[0][1]);
