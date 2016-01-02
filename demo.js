@@ -14,12 +14,12 @@ QuadTree.Node.prototype.render = function render(ctx) {
     child && child.render(ctx);
   })
 
-  ctx.save()
-    ctx.scale(1, -1)
-    ctx.fillStyle = '#aaa'
-    ctx.font = "14px monospace"
-    ctx.fillText(this.occupied, this.center[0] - 5, -this.center[1]);
-  ctx.restore()
+  // ctx.save()
+  //   ctx.scale(1, -1)
+  //   ctx.fillStyle = '#aaa'
+  //   ctx.font = "14px monospace"
+  //   ctx.fillText(this.occupied, this.center[0] - 5, -this.center[1]);
+  // ctx.restore()
 
   if (this.leaf && this.occupied) {
     ctx.strokeStyle = 'hsl(210, 100%, 63%)'
@@ -123,27 +123,25 @@ var ray = {
 
 var traversalPath = [];
 
-function visitNode(node, tx, ty, depth, path) {
+function visitNode(origin, node, tx, ty, depth, path) {
   var ret = false;
-  path && console.log('path:', path.join(', '))
 
-
-  ctx.beginPath()
-    circle(ctx, node.center[0], node.center[1], 5);
-    ctx.fillStyle = ctx.strokeStyle = "#444"
-  ctx.closePath()
-  ctx.stroke()
+  // ctx.beginPath()
+  //   circle(ctx, node.center[0], node.center[1], 5);
+  //   ctx.fillStyle = ctx.strokeStyle = "#444"
+  // ctx.closePath()
+  // ctx.stroke()
 
   ctx.save()
     ctx.translate(node.center[0], node.center[1])
     if (!node.leaf) {
       if (node.occupied) {
-        ctx.strokeStyle = "green"
+        // ctx.strokeStyle = "green"
       } else {
         ctx.strokeStyle = "red"
       }
 
-      ctx.strokeRect(-node.radius + 5, -node.radius + 5, node.radius*2 - 10, node.radius*2 - 10);
+      // ctx.strokeRect(-node.radius + 5, -node.radius + 5, node.radius*2 - 10, node.radius*2 - 10);
     } else {
       ctx.fillStyle = 'hsla(210, 90%, 63%, 1)'
       ctx.fillRect(-node.radius, -node.radius, node.radius*2, node.radius*2)
@@ -152,11 +150,21 @@ function visitNode(node, tx, ty, depth, path) {
 
   ctx.restore();
 
+  if (node.leaf) {
+    ctx.beginPath()
+      ctx.moveTo(origin[0], origin[1])
+      ctx.lineTo(
+        origin[0] + ray.direction[0] * Math.max(tx, ty),
+        origin[1] + ray.direction[1] * Math.max(tx, ty)
+      )
+      ctx.strokeStyle = 'hsla(25, 100%, 68%, .5)';
+      ctx.stroke()
+  }
+
   return ret;
 }
 
 var ctx = fc(function() {
-  console.clear()
   ctx.clear();
   traversalPath.length = 0;
 
@@ -170,7 +178,7 @@ var ctx = fc(function() {
   var y = tree.root.center[1];
   ctx.strokeStyle = 'hsla(90, 100%, 63%, .75)'
 
-  ctx.strokeRect(x-r, y-r, r*2, r*2);
+  // ctx.strokeRect(x-r, y-r, r*2, r*2);
 
   var out = [0, 0]
 
@@ -183,13 +191,13 @@ var ctx = fc(function() {
   ray.direction[0] = dx * il;
   ray.direction[1] = dy * il;
 
-  var dist = 10;
+  var dist = 200;
   var skewed = [-ray.direction[1], ray.direction[0]]
 
   for (var i=-dist; i<=dist; i++) {
     var origin = [
-      ray.origin[0] + skewed[0] * i * 5,
-      ray.origin[1] + skewed[1] * i * 5
+      ray.origin[0] + skewed[0] * i * .25,
+      ray.origin[1] + skewed[1] * i * .25
     ]
 
 
@@ -197,7 +205,7 @@ var ctx = fc(function() {
     ctx.beginPath()
     circle(ctx, origin[0], origin[1], 1)
     ctx.moveTo(origin[0], origin[1])
-    ctx.strokeStyle = 'hsl(260, 100%, 68%)';
+    ctx.strokeStyle = 'rgba(20, 20, 20, .05)';
 
     if (r) {
       ctx.lineTo(out[0][0], out[0][1]);
@@ -205,22 +213,13 @@ var ctx = fc(function() {
       ctx.stroke()
         circle(ctx, out[0][0], out[0][1], 3)
         circle(ctx, out[1][0], out[1][1], 3)
-    }
+    } else {
+      var end = isect.rayAtTime(origin, ray.direction, 100000)
+      ctx.lineTo(end[0], end[1])
 
-    var end = isect.rayAtTime(origin, ray.direction, 100000)
-    ctx.lineTo(end[0], end[1])
+    }
     ctx.stroke()
   }
 
   mouse.render(ctx)
-
-  ctx.save()
-    ctx.fillStyle = "#aaa"
-    ctx.font = '16px monospace'
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    traversalPath.forEach(function(part, i) {
-      ctx.fillText(part.join(' - '), 010, 0);
-      ctx.translate(0, 20)
-    })
-  ctx.restore()
 })

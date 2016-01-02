@@ -23,8 +23,10 @@ var exitLookup = [
 ];
 
 function next(quad, x, y) {
-
-  var i = Math.round(x) < Math.round(y) ? 0 : 1
+  var i = 0;
+  if (Math.round(x) !== Math.round(y)) {
+    i = Math.round(x) < Math.round(y) ? 0 : 1
+  }
   return exitLookup[quad][i];
 }
 
@@ -61,7 +63,7 @@ function first(x, y, mx, my) {
   }
 }
 
-function processSubtree(mask, tx0, ty0, tx1, ty1, node, visit, depth, path) {
+function processSubtree(origin, mask, tx0, ty0, tx1, ty1, node, visit, depth, path) {
   path = path || []
   var mx = (tx0 + tx1) * 0.5;
   var my = (ty0 + ty1) * 0.5;
@@ -71,40 +73,38 @@ function processSubtree(mask, tx0, ty0, tx1, ty1, node, visit, depth, path) {
   // }
   var quad = first(tx0, ty0, mx, my);
 
-  if (visit(node, tx0, ty0, depth, path)) {
+  if (visit(origin, node, tx0, ty0, depth, path)) {
     return true;
   }
 
   while (quad < 4) {
     var masked = quad ^ mask;
     var child = node.children[masked];
-    if (!child) {
-      console.warn('skip:', path.concat(masked).join(', '));
-    }
+
     switch (quad) {
       case 0:
-        if (child && processSubtree(mask, tx0, ty0, mx, my, child, visit, depth+1, path.concat(masked))) {
+        if (child && processSubtree(origin, mask, tx0, ty0, mx, my, child, visit, depth+1, path.concat(masked))) {
           return true;
         }
         quad = next(quad, mx, my);
       break;
 
       case 1:
-        if (child && processSubtree(mask, mx, ty0, tx1, my, child, visit, depth+1, path.concat(masked))) {
+        if (child && processSubtree(origin, mask, mx, ty0, tx1, my, child, visit, depth+1, path.concat(masked))) {
           return true;
         }
         quad = next(quad, tx1, my);
       break;
 
       case 2:
-        if (child && processSubtree(mask, tx0, my, mx, ty1, child, visit, depth+1, path.concat(masked))) {
+        if (child && processSubtree(origin, mask, tx0, my, mx, ty1, child, visit, depth+1, path.concat(masked))) {
           return true;
         }
         quad = next(quad, mx, ty1);
       break;
 
       case 3:
-        if (child && processSubtree(mask, mx, my, tx1, ty1, child, visit, depth+1, path.concat(masked))) {
+        if (child && processSubtree(origin, mask, mx, my, tx1, ty1, child, visit, depth+1, path.concat(masked))) {
           return true;
         }
         quad = 4;
@@ -145,7 +145,6 @@ function processSubtreeVertical(ro, tx0, ty0, tx1, ty1, node, visit, depth) {
 
   var tym = (ty0 + ty1) * 0.5;
   var quad = (ro[0] >= node.center[0] ? 1 : 0) | (tym >= 0 ? 0 : 2);
-  console.log(depth, quad)
   var child = node.children[quad];
 
   // TODO: test for occupancy
@@ -192,7 +191,7 @@ function rayQuadtree(origin, dir, quadtree, out, visit) {
     } else if (!isFinite(tx0)) {
       return processSubtreeVertical(origin, tx0, ty0, tx1, ty1, root, visit, 0);
     } else {
-      return processSubtree(mask, tx0, ty0, tx1, ty1, root, visit, 0);
+      return processSubtree(origin, mask, tx0, ty0, tx1, ty1, root, visit, 0);
     }
   } else {
     console.log('no isect')
